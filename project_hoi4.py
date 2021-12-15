@@ -31,7 +31,10 @@ Provinces = []
 Divisions = []
 
 def create_map(el):
+
     prov = Province(int(el[0]), int(el[1]), 0)
+    print(int(el[0]))
+    print(int(el[1]))
     Provinces.append(prov)
 
 def create_division(current_prov, color):
@@ -55,8 +58,9 @@ def printer(title, text_size=15, base_coords=(10, 10)):
 
 class Division:
     def __init__(self, current_prov, color, chosen=False, velocity=1, r=10, alive=1):
-        self.color = color
+        
         self.current_prov = current_prov
+        self.color = color
         self.velocity = 1
         self.chosen = False
         self.r = 10
@@ -84,23 +88,27 @@ class Province:
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
 
-# def timeboss(t, ts):
-#     t += ts
-#     for event in pygame.event.get():
-#         if event.type == pygame.K_SPACE:
-#             ts += 1
-#             ts = ts % 6
+class Way:
+    def __init__(self, start_pos, end_pos):
+        self.start_pos = start_pos
+        self.end_pos = end_pos
+
+    def draw(self, Provinces)
+        pass
 
 f = open('map.txt', 'r')
 for line in f:
     line = line.rstrip()
     K.append(line)
 
+    print(line)
+    print(type(line))
+
 for i, el in enumerate(K):
-    el.split(' ')
+    el = el.split()
     create_map(el)
 
-create_division(0, GREEN)
+create_division(0, MAGENTA)
 
 
 def timeboss(t):
