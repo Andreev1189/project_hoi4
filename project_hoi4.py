@@ -44,18 +44,21 @@ def printer(title, text_size=15, base_coords=(10, 10)):
 #             ts += 1
 #             ts = ts % 6
 
-def timeboss(t=TIME):
+def timeboss(t):
     t += TIMESPEED
+    return t
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 
+
 while not finished:
     clock.tick(FPS)
 
-    timeboss()
+    TIME = timeboss(TIME)
     printer(TIME)
+    print(TIME)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
