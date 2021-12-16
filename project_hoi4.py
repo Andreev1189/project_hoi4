@@ -140,8 +140,15 @@ class Division:
                 else:
                     self.is_chosen = False
 
-    def direction(self, event):
-        pass
+    def direction(self, event, Provinces):
+        if self.is_chosen == True:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    x_pos, y_pos = event.pos
+                    for prov in Provinces:
+                        if (x_pos - prov.x) ** 2 + (y_pos - prov.y) ** 2 <= prov.r ** 2:
+                            self.current_way = Provinces.index(prov)
+                            print(self.current_way)
 
 
 class Province:
@@ -216,7 +223,7 @@ while not finished:
         div.battle()
         for event in EVENTS:
             div.chosen(event)
-            div.direction(event)
+            div.direction(event, Provinces)
         div.draw(Provinces)
 
     for event in EVENTS:
