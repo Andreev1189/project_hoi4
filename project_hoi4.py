@@ -115,6 +115,10 @@ class Division:
         self.alive = alive
 
     def draw(self, Provinces):
+        if self.is_chosen == False:
+            self.color = default_color
+        if self.is_chosen == True:
+            self.color = BLUE
         pygame.draw.rect(screen, self.color,
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
@@ -127,15 +131,14 @@ class Division:
         pass
 
     def chosen(self, event):
-        pass
-
-    def chosen_up(self):
-        self.is_chosen = True
-        pass
-
-    def chosen_down(self):
-        self.is_chosen = False
-        pass
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                x_pos, y_pos = event.pos
+                if (x_pos - Provinces[self.current_prov].x) ** 2 + (y_pos - Provinces[self.current_prov].y) ** 2 \
+                        <= Provinces[self.current_prov].r ** 2:
+                    self.is_chosen = True
+                else:
+                    self.is_chosen = False
 
     def direction(self, event):
         pass
@@ -146,7 +149,7 @@ class Province:
         self.x = x
         self.y = y
         self.motherland = motherland
-        self.color = GREEN
+        self.color = WHITE
         self.r = r
 
     def draw(self):
@@ -160,7 +163,7 @@ class Way:
         self.color = color
 
     def draw(self, Provinces):
-        pygame.draw.line(screen, BLUE, (Provinces[self.start_pos].x, Provinces[self.start_pos].y),
+        pygame.draw.line(screen, GREY, (Provinces[self.start_pos].x, Provinces[self.start_pos].y),
                                         (Provinces[self.end_pos].x, Provinces[self.end_pos].y), 10)
 
 
@@ -185,8 +188,8 @@ for i, el in enumerate(Z):
     el = el.split()
     craeate_lines(el)
 
-
-create_division(0, MAGENTA)
+default_color = GREEN
+create_division(0, default_color)
 
 
 pygame.display.update()
