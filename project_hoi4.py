@@ -33,43 +33,22 @@ Lines = []
 
 
 def create_map(el):
-
     prov = Province(int(el[0]), int(el[1]), 0)
     Provinces.append(prov)
 
 def craeate_lines(el):
-
     line = Way(int(el[0]), int(el[1]))
     Lines.append(line)
-
 
 def create_division(current_prov, color):
     div = Division(current_prov, color)
     Divisions.append(div)
-
-'''
-def graf_printer(p, w):
-    for np in p:
-        circle(screen, (0, 255, 0), (np[1], np[2]), 10, 10)
-    for way in w:                                           # He y4uTblBaeT Henop9IgkoBble np.
-        polygon(screen, (255, 255, 0), [(p[way[0]][1], p[way[0]][2]), (p[way[1]][1], p[way[1]][2]), 
-                                                                (p[way[0]][1], p[way[0]][2])], 5)
-'''
 
 def printer(title, text_size=15, base_coords=(10, 10)):
     font = pygame.font.Font(None, text_size)
     text = font.render(str(int(title)), True, [255, 255, 255])
     screen.blit(text, base_coords)
 
-"""
-def timeboss(t, time_is_running, event):
-    if event.type == pygame.K_SPACE:
-        time_is_running *= -1
-    if time_is_running == 1:
-        t += TIMESPEED
-    print(t, time_is_running)
-    return t, time_is_running
-"""
 
 class Timeboss:
     def __init__(self):
@@ -111,6 +90,7 @@ class Division:
         self.is_chosen = False
         self.current_way = current_way
         self.way_completed = way_completed
+        self.start_moment = -1
         self.r = 10
         self.alive = alive
 
@@ -124,8 +104,23 @@ class Division:
                 2 * self.r, self.r))
 
     def move(self):
-        # if
-        pass
+        if self.current_way != -1:
+            if self.current_way == self.current_prov:
+                self.current_prov = self.current_way
+                self.current_way = -1
+                self.way_completed = -1
+                self.is_chosen = False
+            else:
+                s_now = (timeboss.TIME - self.start_moment) * self.velocity
+                s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way].x)**2
+                  + (Provinces[self.current_prov].y - Provinces[self.current_way].y)**2) ** (1/2)
+                self.way_completed = s_now / s_full
+                print(self.way_completed)
+                if self.way_completed >= 1:
+                    self.current_prov = self.current_way
+                    self.current_way = -1
+                    self.way_completed = -1
+                    self.is_chosen = False
 
     def battle(self):
         pass
@@ -148,7 +143,9 @@ class Division:
                     for prov in Provinces:
                         if (x_pos - prov.x) ** 2 + (y_pos - prov.y) ** 2 <= prov.r ** 2:
                             self.current_way = Provinces.index(prov)
-                            print(self.current_way)
+                            self.way_completed = 0
+                            self.start_moment = timeboss.TIME
+
 
 
 class Province:
