@@ -3,6 +3,7 @@ from math import *
 import pygame
 from pygame.draw import *
 from random import randint
+from way_search import *
 
 pygame.init()
 
@@ -77,18 +78,20 @@ class Timeboss:
                 self.TIMESPEED = 4
             if event.key == pygame.K_5:
                 self.TIMESPEED = 5
-
+            if event.key == pygame.K_0:
+                self.TIMESPEED = 10
 
 timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color, is_chosen=False, current_way=-1, way_completed=-1, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color, purpose=-1, way_completed=-1, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
-        self.velocity = 1
+        self.velocity = 3
         self.is_chosen = False
-        self.current_way = current_way
+        self.purpose = purpose
+        self.current_way = [-1]
         self.way_completed = way_completed
         self.start_moment = -1
         self.r = 10
@@ -103,24 +106,38 @@ class Division:
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
 
-    def move(self):
-        if self.current_way != -1:
-            if self.current_way == self.current_prov:
-                self.current_prov = self.current_way
-                self.current_way = -1
+    def one_move(self):
+        if self.current_way != [-1]:
+            if self.current_way[0] == self.current_prov:
+                self.current_way.pop(0)
                 self.way_completed = -1
-                self.is_chosen = False
-            else:
+            elif len(self.current_way) == 1:
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
-                s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way].x)**2
-                  + (Provinces[self.current_prov].y - Provinces[self.current_way].y)**2) ** (1/2)
+                s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x)**2
+                  + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y)**2) ** (1/2)
                 self.way_completed = s_now / s_full
-                print(self.way_completed)
                 if self.way_completed >= 1:
-                    self.current_prov = self.current_way
-                    self.current_way = -1
+                    self.current_prov = self.current_way[0]
+                    self.purpose = -1
+                    self.current_way = [-1]
                     self.way_completed = -1
                     self.is_chosen = False
+            elif len(self.current_way) >= 1:
+                print(self.current_way, self.current_prov)
+                s_now = (timeboss.TIME - self.start_moment) * self.velocity
+                s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x) ** 2
+                          + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y) ** 2) ** (1 / 2)
+                self.way_completed = s_now / s_full
+                if self.way_completed >= 1:
+                    self.current_way.pop(0)
+                    self.start_moment = timeboss.TIME
+                    self.current_prov = self.current_way[0]
+                    self.way_completed = -1
+            if len(self.current_way) == 0:
+                self.purpose = -1
+                self.current_way = [-1]
+                self.way_completed = -1
+                self.is_chosen = False
 
     def battle(self):
         pass
@@ -142,9 +159,41 @@ class Division:
                     x_pos, y_pos = event.pos
                     for prov in Provinces:
                         if (x_pos - prov.x) ** 2 + (y_pos - prov.y) ** 2 <= prov.r ** 2:
-                            self.current_way = Provinces.index(prov)
+                            self.purpose = Provinces.index(prov)
+                            self.current_way = self.way_massive()
                             self.way_completed = 0
                             self.start_moment = timeboss.TIME
+
+    def way_massive(self):
+        massive = []
+        finished_wm = False
+        # while not finished_wm:
+        # OTcyTcTBue nyTu:
+        # if self.purpose == -1:
+        #     massive.append(-1)
+        #     return massive
+        #     # finished_wm = True
+        # TpuBuaJIbHblu cJIy4au:
+        if self.purpose == self.current_prov:
+            massive.append(self.current_prov)
+            finished_wm = True
+        # CJIy4au cocegeu:
+        if self.self_neighbours():
+            massive.append(self.purpose)
+            finished_wm = True
+        # CJIy4au He cocegeu:
+        else:
+            massive = big_way()
+            massive.append(self.purpose)
+            finished_wm = True
+        return massive
+
+    def self_neighbours(self):
+        for line in Lines:
+            if line.start_pos == self.current_prov and line.end_pos == self.purpose:
+                return True
+            if line.start_pos == self.purpose and line.end_pos == self.current_prov:
+                return True
 
 
 
@@ -216,7 +265,7 @@ while not finished:
     """
 
     for div in Divisions:
-        div.move()
+        div.one_move()
         div.battle()
         for event in EVENTS:
             div.chosen(event)
@@ -233,6 +282,6 @@ while not finished:
     printer(timeboss.TIME)
 
     pygame.display.update()
-    screen.fill((0, 0, 0))
+    screen.fill((0, 0, 40))
 
 pygame.quit()
