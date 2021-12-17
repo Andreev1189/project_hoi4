@@ -106,7 +106,7 @@ class Division:
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
 
-    def one_move(self):
+    def move(self):
         if self.current_way != [-1]:
             if self.current_way[0] == self.current_prov:
                 self.current_way.pop(0)
@@ -166,26 +166,16 @@ class Division:
 
     def way_massive(self):
         massive = []
-        finished_wm = False
-        # while not finished_wm:
-        # OTcyTcTBue nyTu:
-        # if self.purpose == -1:
-        #     massive.append(-1)
-        #     return massive
-        #     # finished_wm = True
         # TpuBuaJIbHblu cJIy4au:
         if self.purpose == self.current_prov:
             massive.append(self.current_prov)
-            finished_wm = True
         # CJIy4au cocegeu:
         if self.self_neighbours():
             massive.append(self.purpose)
-            finished_wm = True
         # CJIy4au He cocegeu:
         else:
             massive = big_way()
-            massive.append(self.purpose)
-            finished_wm = True
+            massive.append(self.purpose) # FIXME
         return massive
 
     def self_neighbours(self):
@@ -265,7 +255,7 @@ while not finished:
     """
 
     for div in Divisions:
-        div.one_move()
+        div.move()
         div.battle()
         for event in EVENTS:
             div.chosen(event)
