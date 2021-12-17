@@ -123,15 +123,14 @@ class Division:
                     self.way_completed = -1
                     self.is_chosen = False
             elif len(self.current_way) >= 1:
-                print(self.current_way, self.current_prov)
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
                 s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x) ** 2
                           + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y) ** 2) ** (1 / 2)
                 self.way_completed = s_now / s_full
                 if self.way_completed >= 1:
+                    self.current_prov = self.current_way[0]
                     self.current_way.pop(0)
                     self.start_moment = timeboss.TIME
-                    self.current_prov = self.current_way[0]
                     self.way_completed = -1
             if len(self.current_way) == 0:
                 self.purpose = -1
@@ -170,7 +169,7 @@ class Division:
         if self.purpose == self.current_prov:
             massive.append(self.current_prov)
         # CJIy4au cocegeu:
-        if self.self_neighbours():
+        elif self.self_neighbours():
             massive.append(self.purpose)
         # CJIy4au He cocegeu:
         else:
