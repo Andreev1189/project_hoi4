@@ -19,7 +19,7 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 
-BORDERS = (1200, 900)
+BORDERS = (500, 500)
 screen = pygame.display.set_mode(BORDERS)
 
 # provinces = [[0, 100, 100], [1, 200, 100], [2, 150, 100 * (1 + 0.5 * sqrt(3))]]
@@ -173,8 +173,9 @@ class Division:
             massive.append(self.purpose)
         # CJIy4au He cocegeu:
         else:
-            massive = big_way()
-            massive.append(self.purpose) # FIXME
+            # massive = big_way()
+            print()
+            massive = final_way(Provinces, Lines, self.current_prov, self.purpose)
         return massive
 
     def self_neighbours(self):
@@ -203,6 +204,8 @@ class Way:
         self.start_pos = start_pos
         self.end_pos = end_pos
         self.color = color
+        self.distance = ((Provinces[start_pos].x - Provinces[end_pos].x)**2 +
+                         (Provinces[start_pos].y - Provinces[end_pos].y)**2)**(1/2)
 
     def draw(self, Provinces):
         pygame.draw.line(screen, GREY, (Provinces[self.start_pos].x, Provinces[self.start_pos].y),
