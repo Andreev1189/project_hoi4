@@ -27,6 +27,9 @@ sound3 = pygame.mixer.Sound('Erich-Weinert-Ensemble_-_Arbeiter_von_Wien_(musmore
 sound2 = pygame.mixer.Sound('Rammstein Links 2-3-4.mp3')
 sound1 = pygame.mixer.Sound('mechanic-button-pressing_fj_hbhno.mp3')
 
+current_sound = sound3
+volume = 0.5
+
 menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
 menu = pygame.image.load('menu.png')
 menu_surface.blit(menu, (0, 0))
@@ -45,6 +48,7 @@ pygame.display.update()
 clock = pygame.time.Clock()
 
 def quit(event):
+
     if event.type == pygame.QUIT:
         return True
     else:
@@ -54,20 +58,62 @@ def quit(event):
                                                                     (y > 390 and y < 415)):
                 return True
 
-def chose_music(event):
+
+def click_sound_effect(event, sound1):
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        sound1.play()
+
+def play_music(event, current_sound, sound2, sound3):
 
     if event.type == pygame.MOUSEBUTTONDOWN :
         x, y = event.pos
         if(( x > (WIDTH - MENU_WIDTH)/2 and x < (WIDTH - MENU_WIDTH)/2 + MENU_WIDTH) and
             y > 350, y < 375):
-            pass
+            if current_sound == sound3:
+                sound3.stop()
+                sound2.play()
+            elif current_sound == sound2:
+                sound2.stop()
+                sound3.play()
 
+def chose_music(event, current_sound, sound2, sound3):
 
-def volume(event):
-    pass
+    if event.type == pygame.MOUSEBUTTONDOWN :
+        x, y = event.pos
+        if(( x > (WIDTH - MENU_WIDTH)/2 and x < (WIDTH - MENU_WIDTH)/2 + MENU_WIDTH) and
+            (y > 350 and y < 375)):
+            if current_sound == sound2:
+                current_sound = sound3
+            elif current_sound == sound3:
+                current_sound = sound2
 
+            play_music(event, current_sound,sound2, sound3)
+            return current_sound
+
+    return current_sound
+
+def Volume(event, volume):
+
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_EQUALS:
+            if volume < 1:
+                volume += 0.1
+        if event.key == pygame.K_MINUS:
+            if volume > 0:
+                volume -= 0.1
+        
+    return volume
+
+def chaging_volume(volume, current_sound, sound2, sound3):
+    
+    if current_sound == sound2:
+        sound2.set_volume(volume)
+    if current_sound == sound3:
+        sound2.set_volume(volume)
 
 Finished = False
+
 while not Finished:
 
     clock.tick(FPS)
@@ -76,36 +122,14 @@ while not Finished:
     for event in EVENTS:
 
         Finished = quit(event)
-        chose_music(event)
-        volume(event)
+        click_sound_effect(event, sound1)
+        current_sound = chose_music(event, current_sound, sound2, sound3)
+        #play_music(event, current_sound,sound2, sound3)
+        volume = Volume(event, volume)
+        #chaging_volume(volume, current_sound, sound2, sound3)
+        sound2.set_volume(volume)
+        sound3.set_volume(volume)
+
 
         if event.type == pygame.QUIT:
             Finished = True
-        
-    '''
-    for i in pygame.event.get():
-        if i.type == pygame.QUIT:
-            Finished = True
- 
-        elif i.type == pygame.KEYUP:
-            if i.key == pygame.K_1:
-                sound3.stop()
-                sound3.play()
-
-            elif i.key == pygame.K_MINUS:
-                sound3.set_volume(0.5)
-
-            elif i.key == pygame.K_EQUALS:
-                sound3.set_volume(1)
- 
-        elif i.type == pygame.MOUSEBUTTONUP:
-            if i.button == 1:
-                sound1.play()
-            elif i.button == 3:
-                sound1.stop()
-                sound2.play()
- 
-    
-    pygame.display.update()
-    screen.fill(WHITE)
-    '''
