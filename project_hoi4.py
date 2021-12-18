@@ -19,7 +19,7 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 
-BORDERS = (500, 500)
+BORDERS = (700, 700)
 screen = pygame.display.set_mode(BORDERS)
 
 # provinces = [[0, 100, 100], [1, 200, 100], [2, 150, 100 * (1 + 0.5 * sqrt(3))]]

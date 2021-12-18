@@ -68,7 +68,7 @@ def find_distance(Lines, self_current_prov, self_purpose):
         for prov in iteration_prov:
             current_iteration_prov.append(self_neibours(Lines, prov))
         # print(current_iteration_prov)
-        count = iteration_prov.count(self_purpose)
+        count = massive_trans(current_iteration_prov).count(self_purpose)
         GRAPH.append(current_iteration_prov)
         iteration_prov = massive_trans(current_iteration_prov)
         deep += 1
@@ -80,15 +80,18 @@ def get_unique_numbers(numbers):
     for number in numbers:
         if not (number in list_of_unique_numbers):
             list_of_unique_numbers.append(number)
+
     return list_of_unique_numbers
 
-def antifirst_prov(GRAPH, self_purpose):
+def antifirst_prov(GRAPH_1, GRAPH_2, self_purpose):
     provinces = []
-    for i in range(len(GRAPH[-1])):
-        for j in range(len(GRAPH[-1][i])):
-            if j == self_purpose:
-                provinces.append(massive_trans(GRAPH[-2][i]))
-    print(provinces)
+    for i in range(0, len(GRAPH_1)):
+        for j in range(0, len(GRAPH_1[i])):
+            print(i, j, GRAPH_1[i][j], self_purpose)
+            if GRAPH_1[i][j] == self_purpose:
+                print("GRAPH_2, i", GRAPH_2, i)
+                provinces.append(massive_trans(GRAPH_2)[i])
+    print("provinces", provinces)
     return get_unique_numbers(provinces)
 
 def way_distance(Provinces, massive):
@@ -104,26 +107,31 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     deep = a[0]
     count = a[1]
     GRAPH = a[2]
-    # prov_one_deep = antifirst_prov(GRAPH, self_purpose)
     current_deep = 1
-    # current_count = 0
-    deep_prov = antifirst_prov(GRAPH, self_purpose)
-    deep_GRAPH = [[[self_purpose]], [antifirst_prov(GRAPH, self_purpose)]]
-    while not current_deep == deep:
+    deep_prov = antifirst_prov(GRAPH[-1], GRAPH[-2], self_purpose)
+    deep_GRAPH = [[[self_purpose]], [antifirst_prov(GRAPH[-1], GRAPH[-2], self_purpose)]]
+    while not current_deep == deep-1:
         current_deep_prov = []
-        for prov in deep_prov:
-            current_deep_prov.append(antifirst_prov(GRAPH, prov))
+        for prov in massive_trans(deep_prov):
+            current_deep_prov.append(antifirst_prov(GRAPH[-current_deep-1], GRAPH[-current_deep-2], prov))           # PEKYPCU9I!!!!!!!
         deep_GRAPH.append(current_deep_prov)
         deep_prov = massive_trans(current_deep_prov)
         deep_GRAPH.append(current_deep_prov)
         current_deep += 1
+    deep_GRAPH.append(GRAPH[0])
+    deep_GRAPH.reverse()
+    deep_GRAPH = get_unique_numbers(deep_GRAPH)
+    # for i in range(0, len(deep_GRAPH)):
+    #     deep_GRAPH[i] = get_unique_numbers(deep_GRAPH[i])
+    print(deep_GRAPH)
     min_i = 5000
     min_j = 5000
     min_dist = 10000
     first_way = []
-    for p in range(0, deep-1):
+    for p in range(len(deep_GRAPH)):
         first_way.append(deep_GRAPH[p][0][0])
         # deep_GRAPH[p][0].pop(0)
+    print(first_way)
     for i in range(len(deep_GRAPH)):
         for j in range(len(deep_GRAPH[i])):
             pass
