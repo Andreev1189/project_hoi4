@@ -8,6 +8,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 bg = pygame.image.load('Backgroung.jpg')
 screen.blit(bg, (0,0))
 
+
 MENU_HEIGHT = 300
 MENU_WIDTH = 200
 
@@ -30,25 +31,40 @@ sound5 = pygame.mixer.Sound('mechanic-button-pressing_fj_hbhno.mp3')
 current_sound = sound2
 volume = 0.5
 
-menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
-menu = pygame.image.load('menu.png')
-menu_surface.blit(menu, (0, 0))
-screen.blit(menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
+def draw_main_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
 
-button1 = pygame.image.load('singleplayer.png')
-screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
+    main_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
+    menu = pygame.image.load('menu.png')
+    main_menu_surface.blit(menu, (0, 0))
+    screen.blit(main_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
 
-button2 = pygame.image.load('options.png')
-screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 350))
+    button1 = pygame.image.load('singleplayer.png')
+    screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
 
-button3 = pygame.image.load('quit.png')
-screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 390))
+    button2 = pygame.image.load('options.png')
+    screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 350))
 
-button4 = pygame.image.load('audio.png')
-screen.blit(button4, ((WIDTH - MENU_WIDTH)/2, 430))
+    button3 = pygame.image.load('quit.png')
+    screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 550))
 
-pygame.display.update()
-clock = pygame.time.Clock()
+def draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
+
+    option_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
+    menu = pygame.image.load('menu.png')
+    option_menu_surface.blit(menu, (0, 0))
+    screen.blit(option_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
+
+    button1 = pygame.image.load('Game.png')
+    screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
+
+    button2 = pygame.image.load('Audio.png')
+    screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 380) )
+
+    button3 = pygame.image.load('Back.png')
+    screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 530) )
+
+draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+draw_main_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
 
 def quit(event):
 
@@ -58,7 +74,7 @@ def quit(event):
         if event.type == pygame.MOUSEBUTTONDOWN :
             x, y = event.pos
             if(( x > (WIDTH - MENU_WIDTH)/2 and x < (WIDTH - MENU_WIDTH)/2 + MENU_WIDTH) and
-                                                                    (y > 390 and y < 415)):
+                                                                    (y > 550 and y < 575)):
                 return True
 
 
@@ -114,6 +130,9 @@ def chaging_volume(volume, current_sound, sound1, sound2):
         sound1.set_volume(volume)
     if current_sound == sound2:
         sound1.set_volume(volume)
+
+pygame.display.update()
+clock = pygame.time.Clock()
 
 Finished = False
 
