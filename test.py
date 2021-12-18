@@ -284,8 +284,6 @@ while not Finished:
 
             click_sound_effect(event, sound3)
 
-
-        
         if event.type == pygame.QUIT:
             Finished = True
 
