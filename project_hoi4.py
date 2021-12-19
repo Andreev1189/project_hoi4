@@ -35,8 +35,8 @@ Lines = []
 
 
 
-def create_map(el, motherlands):
-    prov = Province(int(el[0]), int(el[1]), motherlands)
+def create_map(el, motherlands, number):
+    prov = Province(int(el[0]), int(el[1]), motherlands, number)
     Provinces.append(prov)
 
 def craeate_lines(el):
@@ -211,9 +211,10 @@ class Division:
 
 
 class Province:
-    def __init__(self, x, y, motherland=0, color=GREEN, r=15):
+    def __init__(self, x, y, motherland, number, color=GREEN, r=15):
         self.x = x
         self.y = y
+        self.number = number
         self.motherland = motherland
         self.color = WHITE
         self.r = r
@@ -224,6 +225,8 @@ class Province:
         else:
             self.color = GREY
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
+        if self.number in logistics_prov:
+            pygame.draw.circle(screen, YELLOW, (self.x, self.y), self.r, 2)
 
 
 
@@ -256,9 +259,9 @@ for line in f2:
 for i, el in enumerate(K):
     el = el.split(' ')
     if i in all_motherlands[0]:
-        create_map(el, 0)
+        create_map(el, 0, i)
     elif i in all_motherlands[1]:
-        create_map(el, 1)
+        create_map(el, 1, i)
 
 
 for i, el in enumerate(Z):
