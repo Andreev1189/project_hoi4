@@ -29,6 +29,7 @@ K = []
 Z = []
 Provinces = []
 all_motherlands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
+all_supplylands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
 logistics_prov = [0, 13]
 Divisions = []
 Lines = []
@@ -87,7 +88,7 @@ timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=-1, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
         self.velocity = 3
@@ -104,14 +105,14 @@ class Division:
 
     def draw(self, Provinces):
         if self.motherland == 0:
-            if self.is_chosen == False:
+            if not self.is_chosen:
                 self.color = default_color
-            if self.is_chosen == True:
+            if self.is_chosen:
                 self.color = BLUE
         if self.motherland == 1:
-            if self.is_chosen == False:
+            if not self.is_chosen:
                 self.color = RED
-            if self.is_chosen == True:
+            if self.is_chosen:
                 self.color = YELLOW
         pygame.draw.rect(screen, self.color,
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
@@ -120,6 +121,10 @@ class Division:
             self.draw_current_way()
         if self.way_completed != -1 and self.is_chosen == True:
             self.draw_current_line()
+        self.supply_define()
+        if not self.is_supply:
+            circle(screen, BLACK,
+                   (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r), 3)
 
     def draw_current_line(self):
         R_0 = [Provinces[self.current_prov].x, Provinces[self.current_prov].y]
@@ -180,14 +185,28 @@ class Division:
 
     def prov_capture(self, current_prov):
         if Provinces[current_prov].motherland != self.motherland:
-            print(current_prov)
+            global all_supplylands
             all_motherlands[Provinces[current_prov].motherland].remove(current_prov)
             all_motherlands[self.motherland].append(current_prov)
             Provinces[current_prov].motherland = self.motherland
             supplylands_0 = supply_account(Lines, all_motherlands[0], logistics_prov)
             supplylands_1 = supply_account(Lines, all_motherlands[1], logistics_prov)
-            print("supplylands", supplylands_0, supplylands_1)
-            print("motherlands", all_motherlands[self.motherland], all_motherlands[-1-self.motherland])
+            all_supplylands = [supplylands_0, supplylands_1]
+            self.supply_define()
+
+
+    def supply_define(self):
+        for div in Divisions:
+            if div.motherland == 0:
+                if div.current_prov in all_supplylands[0]:
+                    div.is_supply = True
+                else:
+                    div.is_supply = False
+            if div.motherland == 1:
+                if div.current_prov in all_supplylands[1]:
+                    div.is_supply = True
+                else:
+                    div.is_supply = False
 
     def chosen(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -304,7 +323,6 @@ finished = False
 while not finished:
     clock.tick(FPS)
     EVENTS = pygame.event.get()
-
     for i, el in enumerate(Lines):
         el.draw(Provinces)
 

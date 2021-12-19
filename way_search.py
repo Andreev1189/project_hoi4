@@ -126,6 +126,7 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     deep_GRAPH.append(GRAPH[0])
     deep_GRAPH.reverse()
     deep_GRAPH = get_unique_numbers(deep_GRAPH)
+    # print("deep_GRAPH", deep_GRAPH)
     # for i in range(0, len(deep_GRAPH)):
     #     deep_GRAPH[i] = get_unique_numbers(deep_GRAPH[i])
     # print(deep_GRAPH)
@@ -136,7 +137,7 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     for p in range(len(deep_GRAPH)):
         first_way.append(deep_GRAPH[p][0][0])
         # deep_GRAPH[p][0].pop(0)
-    print("first_way", first_way)
+    # print("first_way", first_way)
     for i in range(len(deep_GRAPH)):
         for j in range(len(deep_GRAPH[i])):
             pass
@@ -159,7 +160,6 @@ def true_Lines(Lines, motherlands):
     true_lines = []
     for way in Lines:
         if (way.start_pos in motherlands) and (way.end_pos in motherlands):
-            way.color = 0xFFC91F
             true_lines.append(way)
     return true_lines
 
