@@ -28,21 +28,23 @@ screen = pygame.display.set_mode(BORDERS)
 K = []
 Z = []
 Provinces = []
+all_motherlands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
+logistics_prov = [0, 13]
 Divisions = []
 Lines = []
 
 
 
-def create_map(el):
-    prov = Province(int(el[0]), int(el[1]), 0)
+def create_map(el, motherlands):
+    prov = Province(int(el[0]), int(el[1]), motherlands)
     Provinces.append(prov)
 
 def craeate_lines(el):
     line = Way(int(el[0]), int(el[1]))
     Lines.append(line)
 
-def create_division(current_prov, color):
-    div = Division(current_prov, color)
+def create_division(current_prov, color, motherland):
+    div = Division(current_prov, color, motherland)
     Divisions.append(div)
 
 def printer(title, text_size=15, base_coords=(10, 10)):
@@ -85,7 +87,7 @@ timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color, purpose=-1, way_completed=-1, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=-1, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
         self.velocity = 3
@@ -93,15 +95,24 @@ class Division:
         self.purpose = purpose
         self.current_way = [-1]
         self.way_completed = way_completed
+        self.battle_completed = battle_completed
+        self.is_supply = True
         self.start_moment = -1
         self.r = 10
         self.alive = alive
+        self.motherland = motherland
 
     def draw(self, Provinces):
-        if self.is_chosen == False:
-            self.color = default_color
-        if self.is_chosen == True:
-            self.color = BLUE
+        if self.motherland == 0:
+            if self.is_chosen == False:
+                self.color = default_color
+            if self.is_chosen == True:
+                self.color = BLUE
+        if self.motherland == 1:
+            if self.is_chosen == False:
+                self.color = RED
+            if self.is_chosen == True:
+                self.color = YELLOW
         pygame.draw.rect(screen, self.color,
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
@@ -109,6 +120,7 @@ class Division:
     def move(self):
         if self.current_way != [-1]:
             if self.current_way[0] == self.current_prov:
+                self.prov_capture(self.current_way[0])
                 self.current_way.pop(0)
                 self.way_completed = -1
             elif len(self.current_way) == 1:
@@ -117,6 +129,7 @@ class Division:
                   + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y)**2) ** (1/2)
                 self.way_completed = s_now / s_full
                 if self.way_completed >= 1:
+                    self.prov_capture(self.current_way[0])
                     self.current_prov = self.current_way[0]
                     self.purpose = -1
                     self.current_way = [-1]
@@ -128,6 +141,7 @@ class Division:
                           + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y) ** 2) ** (1 / 2)
                 self.way_completed = s_now / s_full
                 if self.way_completed >= 1:
+                    self.prov_capture(self.current_way[0])
                     self.current_prov = self.current_way[0]
                     self.current_way.pop(0)
                     self.start_moment = timeboss.TIME
@@ -140,6 +154,17 @@ class Division:
 
     def battle(self):
         pass
+
+    def prov_capture(self, current_prov):
+        if Provinces[current_prov].motherland != self.motherland:
+            print(current_prov)
+            all_motherlands[Provinces[current_prov].motherland].remove(current_prov)
+            all_motherlands[self.motherland].append(current_prov)
+            Provinces[current_prov].motherland = self.motherland
+            supplylands_0 = supply_account(Lines, all_motherlands[0], logistics_prov)
+            supplylands_1 = supply_account(Lines, all_motherlands[1], logistics_prov)
+            print("supplylands", supplylands_0, supplylands_1)
+            print("motherlands", all_motherlands[self.motherland], all_motherlands[-1-self.motherland])
 
     def chosen(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -173,8 +198,6 @@ class Division:
             massive.append(self.purpose)
         # CJIy4au He cocegeu:
         else:
-            # massive = big_way()
-            print()
             massive = final_way(Provinces, Lines, self.current_prov, self.purpose)
         return massive
 
@@ -188,7 +211,7 @@ class Division:
 
 
 class Province:
-    def __init__(self, x, y, motherland, color=GREEN, r=15):
+    def __init__(self, x, y, motherland=0, color=GREEN, r=15):
         self.x = x
         self.y = y
         self.motherland = motherland
@@ -196,7 +219,12 @@ class Province:
         self.r = r
 
     def draw(self):
+        if self.motherland == 0:
+            self.color = WHITE
+        else:
+            self.color = GREY
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
+
 
 
 class Way:
@@ -227,14 +255,20 @@ for line in f2:
 
 for i, el in enumerate(K):
     el = el.split(' ')
-    create_map(el)
+    if i in all_motherlands[0]:
+        create_map(el, 0)
+    elif i in all_motherlands[1]:
+        create_map(el, 1)
+
 
 for i, el in enumerate(Z):
     el = el.split()
     craeate_lines(el)
 
 default_color = GREEN
-create_division(0, default_color)
+create_division(0, default_color, 0)
+create_division(12, RED, 1)
+
 
 
 pygame.display.update()
