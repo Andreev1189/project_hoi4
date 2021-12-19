@@ -116,6 +116,29 @@ class Division:
         pygame.draw.rect(screen, self.color,
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
+        if self.current_way != [-1] and self.is_chosen == True:
+            self.draw_current_way()
+        if self.way_completed != -1 and self.is_chosen == True:
+            self.draw_current_line()
+
+    def draw_current_line(self):
+        R_0 = [Provinces[self.current_prov].x, Provinces[self.current_prov].y]
+        R_1 = [Provinces[self.current_way[0]].x, Provinces[self.current_way[0]].y]
+        R_line = [R_1[0] - R_0[0], R_1[1] - R_0[1]]
+        R_current_line = [self.way_completed * R_line[0], self.way_completed * R_line[1]]
+        R_current_dot = [R_0[0] + R_current_line[0], R_0[1] + R_current_line[1]]
+        pygame.draw.line(screen, CYAN, R_0, R_1, 3)
+        pygame.draw.line(screen, MAGENTA, R_0, R_current_dot, 3)
+
+    def draw_current_way(self):
+        current_way_coords = []
+        for el in massive_trans(self.current_way):
+            current_way_coords.append([Provinces[el].x, Provinces[el].y])
+        total_way_coords = []
+        total_way_coords += current_way_coords
+        current_way_coords.reverse()
+        total_way_coords += current_way_coords
+        polygon(screen, CYAN, total_way_coords, 3)
 
     def move(self):
         if self.current_way != [-1]:
