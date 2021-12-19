@@ -4,6 +4,9 @@ import pygame
 from pygame.draw import *
 from random import randint
 from way_search import *
+from test import *
+
+print(1)
 
 pygame.init()
 
@@ -21,7 +24,6 @@ GREY = 0x7D7D7D
 
 BORDERS = (700, 700)
 screen = pygame.display.set_mode(BORDERS)
-
 
 K = []
 Z = []
@@ -245,6 +247,7 @@ clock = pygame.time.Clock()
 finished = False
 
 while not finished:
+
     clock.tick(FPS)
     EVENTS = pygame.event.get()
 

@@ -141,7 +141,7 @@ def chose_music(event, current_sound, sound1, sound2):
             play_music(event, current_sound, sound1, sound2)    
 
         elif(( x > (WIDTH - MENU_WIDTH)/2 and x < (WIDTH - MENU_WIDTH)/2 + MENU_WIDTH) and
-            (y > 390 and y < 390 + 65)):
+            (y > 390 and y < 455)):
 
             if current_sound == sound1:
                 current_sound = sound2
@@ -220,6 +220,69 @@ def audio_to_option(event):
             y > 530 and y < 583):
             return True
 
+def GENERAL(event, sound1, sound2, sound3, current_sound, screen, HEIGHT, 
+                                MENU_HEIGHT, WIDTH, MENU_WIDTH, menu_type, volume, Finished):
+
+        if menu_type == 'audio':
+
+            if audio_to_option(event):
+                menu_type = 'option'
+                draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+                current_sound = chose_music(event, current_sound, sound1, sound2)
+                volume = Volume(event, volume)
+                sound1.set_volume(volume)
+                sound2.set_volume(volume)
+
+                click_sound_effect(event, sound3)
+                Finished = quit(event)
+    
+
+        elif menu_type == 'option':
+
+            Finished = quit(event)
+
+            if option_to_main(event):
+                menu_type = 'main'
+                draw_main_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+            if option_to_game(event):
+                menu_type = 'game'
+                draw_game_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+            if option_to_audio(event):
+                menu_type = 'audio'
+                draw_audio_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+            click_sound_effect(event, sound3)
+            
+        elif menu_type == 'main':
+
+            Finished = quit_main(event)
+
+            if main_to_option(event):
+                menu_type = 'option'
+                draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+                print(10)
+
+            click_sound_effect(event, sound3)
+            print('I m here')
+
+        elif menu_type == 'game':
+
+            Finished = quit(event)
+
+            if game_to_option(event):
+
+                menu_type = 'option'
+                draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+            click_sound_effect(event, sound3)
+
+        return current_sound, menu_type, volume, Finished
+
+
+
 pygame.display.update()
 clock = pygame.time.Clock()
 
@@ -231,7 +294,14 @@ while not Finished:
     EVENTS = pygame.event.get()
 
     for event in EVENTS:
-        
+
+        '''
+        current_sound, menu_type, volume, Finished = GENERAL(event, sound1, sound2, sound3,
+            current_sound, screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH, menu_type, volume, Finished)
+
+        pygame.display.update()
+        print(menu_type)
+        '''
         if menu_type == 'audio':
 
             if audio_to_option(event):
@@ -289,10 +359,9 @@ while not Finished:
                 draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
 
             click_sound_effect(event, sound3)
-           
+
     pygame.display.update()
     print(menu_type)
-
 
         
 # 1/2 68 - 70
