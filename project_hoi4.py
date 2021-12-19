@@ -22,16 +22,12 @@ GREY = 0x7D7D7D
 BORDERS = (700, 700)
 screen = pygame.display.set_mode(BORDERS)
 
-# provinces = [[0, 100, 100], [1, 200, 100], [2, 150, 100 * (1 + 0.5 * sqrt(3))]]
-# ways = [[1, 2], [2, 0], [0, 1]]
 
 K = []
 Z = []
 Provinces = []
 Divisions = []
 Lines = []
-
-
 
 def create_map(el):
     prov = Province(int(el[0]), int(el[1]), 0)
@@ -83,7 +79,6 @@ class Timeboss:
 
 timeboss = Timeboss()
 
-
 class Division:
     def __init__(self, current_prov, color, purpose=-1, way_completed=-1, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
@@ -108,31 +103,43 @@ class Division:
 
     def move(self):
         if self.current_way != [-1]:
+
             if self.current_way[0] == self.current_prov:
+
                 self.current_way.pop(0)
                 self.way_completed = -1
+
             elif len(self.current_way) == 1:
+
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
                 s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x)**2
                   + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y)**2) ** (1/2)
                 self.way_completed = s_now / s_full
+
                 if self.way_completed >= 1:
+
                     self.current_prov = self.current_way[0]
                     self.purpose = -1
                     self.current_way = [-1]
                     self.way_completed = -1
                     self.is_chosen = False
+
             elif len(self.current_way) >= 1:
+
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
                 s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x) ** 2
                           + (Provinces[self.current_prov].y - Provinces[self.current_way[0]].y) ** 2) ** (1 / 2)
                 self.way_completed = s_now / s_full
+
                 if self.way_completed >= 1:
+
                     self.current_prov = self.current_way[0]
                     self.current_way.pop(0)
                     self.start_moment = timeboss.TIME
                     self.way_completed = -1
+
             if len(self.current_way) == 0:
+
                 self.purpose = -1
                 self.current_way = [-1]
                 self.way_completed = -1
@@ -152,6 +159,7 @@ class Division:
                     self.is_chosen = False
 
     def direction(self, event, Provinces):
+
         if self.is_chosen == True:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
@@ -173,8 +181,6 @@ class Division:
             massive.append(self.purpose)
         # CJIy4au He cocegeu:
         else:
-            # massive = big_way()
-            print()
             massive = final_way(Provinces, Lines, self.current_prov, self.purpose)
         return massive
 
@@ -184,8 +190,6 @@ class Division:
                 return True
             if line.start_pos == self.purpose and line.end_pos == self.current_prov:
                 return True
-
-
 
 class Province:
     def __init__(self, x, y, motherland, color=GREEN, r=15):
@@ -218,7 +222,6 @@ f2 = open('ways.txt', 'r')
 for line in f1:
     line = line.rstrip()
     K.append(line)
-
 
 for line in f2:
     line = line.rstrip()
