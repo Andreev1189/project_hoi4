@@ -285,11 +285,6 @@ while not finished:
     for i, el in enumerate(Provinces):
         el.draw()
 
-
-    """
-    Kak goJI)I(Ho 6blTb:
-    """
-
     for div in Divisions:
         div.move()
         div.battle()

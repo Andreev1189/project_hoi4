@@ -173,4 +173,3 @@ def supply_account(Lines, motherlands, logistics_prov):
             if find_distance(true_lines, log_prov, prov, DIAMETR=supply_DIAMETR) != [-1, -1, -1]:
                 supplylands.append(prov)
     return supplylands
-
