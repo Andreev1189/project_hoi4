@@ -90,20 +90,23 @@ timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, attack=10, defence=1000, organisation=1, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
-        self.velocity = 3
+        self.velocity = velocity
         self.is_chosen = False
         self.purpose = purpose
         self.current_way = [-1]
         self.way_completed = way_completed
-        self.battle_completed = battle_completed
         self.is_supply = True
         self.start_moment = -1
-        self.r = 10
+        self.r = r
         self.alive = alive
         self.motherland = motherland
+        self.battle_completed = battle_completed
+        self.attack = attack
+        self.defence = defence
+        self.organisation = organisation
 
     def draw(self, Provinces):
         if self.motherland == 0:
@@ -183,6 +186,7 @@ class Division:
                 self.is_chosen = False
 
     def battle(self):
+        s_now = timeboss.TIME - self.start_moment
         pass
 
     def prov_capture(self, current_prov):
@@ -195,7 +199,6 @@ class Division:
             supplylands_1 = supply_account(Lines, all_motherlands[1], logistics_prov)
             all_supplylands = [supplylands_0, supplylands_1]
             self.supply_define()
-
 
     def supply_define(self):
         for div in Divisions:
