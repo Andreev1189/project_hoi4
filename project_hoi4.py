@@ -184,7 +184,6 @@ class Division:
                 self.is_chosen = False
 
     def battle(self):
-        s_now = timeboss.TIME - self.start_moment
         pass
 
     def prov_capture(self, current_prov):
