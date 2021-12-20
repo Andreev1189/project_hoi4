@@ -5,7 +5,7 @@ HEIGHT = 900
 WIDTH = 1200
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-bg = pygame.image.load('Backgroung.jpg')
+bg = pygame.image.load('pictures/Backgroung.jpg')
 screen.blit(bg, (0,0))
 
 MENU_HEIGHT = 300
@@ -169,8 +169,6 @@ def chaging_volume(volume, current_sound, sound1, sound2):
     if current_sound == sound2:
         sound1.set_volume(volume)
 
-
-
 def main_to_option(event):
 
     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -266,7 +264,6 @@ def GENERAL(event, sound1, sound2, sound3, current_sound, screen, HEIGHT,
                 print(10)
 
             click_sound_effect(event, sound3)
-            print('I m here')
 
         elif menu_type == 'game':
 
@@ -280,6 +277,88 @@ def GENERAL(event, sound1, sound2, sound3, current_sound, screen, HEIGHT,
             click_sound_effect(event, sound3)
 
         return current_sound, menu_type, volume, Finished
+        '''
+class General:
+    def __init__(event, sound1, sound2, sound3, current_sound, menu_type, screen)
+        self.event = event
+        self.sound1 = sound1
+        self.sound2 = sound2
+        self.sound3 = sound3
+        self.current_sound = current_sound
+        self.menu_type = menu_type
+        self.screen = screen
+
+    def run_audio_menu_type():
+        if self.menu_type == 'audio':
+            return True
+
+    def run_option_menu_type():
+        if self.menu_type == 'option':
+            return True
+
+    def run_main_menu_type():
+        if self.menu_type == 'main':
+            return True
+
+    def run_game_menu_type():
+        if self.menu_tupe == 'game':
+            return True
+
+    def opened_audio_menu():
+
+        if audio_to_option(event):
+            self.menu_type = 'option'
+            draw_option_menu(self.screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+        self.current_sound = chose_music(event, current_sound, sound1, sound2)
+        self.volume = Volume(event, volume)
+        sound1.set_volume(volume)
+        sound2.set_volume(volume)
+
+        click_sound_effect(event, sound3)
+        Finished = quit(event)
+
+    def opened_option_menu():
+
+        Finished = quit(event)
+
+        if option_to_main(event):
+            menu_type = 'main'
+            draw_main_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+        if option_to_game(event):
+            menu_type = 'game'
+            draw_game_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+        if option_to_audio(event):
+            menu_type = 'audio'
+            draw_audio_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+        click_sound_effect(event, sound3)
+
+
+    def opened_main_menu():
+
+        Finished = quit_main(event)
+
+        if main_to_option(event):
+            menu_type = 'option'
+            draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+            print(10)
+
+        click_sound_effect(event, sound3)
+
+    def opened_game_menu():
+
+        Finished = quit(event)
+
+        if game_to_option(event):
+            menu_type = 'option'
+            draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH)
+
+        click_sound_effect(event, sound3)
+
+        '''
 
 
 
@@ -302,6 +381,7 @@ while not Finished:
         pygame.display.update()
         print(menu_type)
         '''
+
         if menu_type == 'audio':
 
             if audio_to_option(event):
@@ -348,7 +428,6 @@ while not Finished:
                 print(10)
 
             click_sound_effect(event, sound3)
-            print('I m here')
 
         elif menu_type == 'game':
 
@@ -360,8 +439,20 @@ while not Finished:
 
             click_sound_effect(event, sound3)
 
+        '''
+
+        if mainloop.run_audio_menu_type():
+            mainloop.opened_audio_menu()
+
+        elif mainloop.run_option_menu_type():
+            mainloop.opened_option_menu()
+
+        elif mainloop.run_game_menu_type():
+            mainloop.opened_game_menu()
+
+        elif mainloop.run_main_menu_type():
+            mainloop.opened_game_menu()
+        '''
+
     pygame.display.update()
     print(menu_type)
-
-        
-# 1/2 68 - 70

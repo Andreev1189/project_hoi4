@@ -4,9 +4,8 @@ import pygame
 from pygame.draw import *
 from random import randint
 from way_search import *
-from test import *
 
-print(1)
+
 
 pygame.init()
 
@@ -25,12 +24,9 @@ GREY = 0x7D7D7D
 BORDERS = (700, 700)
 screen = pygame.display.set_mode(BORDERS)
 
-<<<<<<< HEAD
-=======
 # provinces = [[0, 100, 100], [1, 200, 100], [2, 150, 100 * (1 + 0.5 * sqrt(3))]]
 # ways = [[1, 2], [2, 0], [0, 1]]
 
->>>>>>> 87900de9af94035b9607ddf0ef9af3c08f83b9c5
 K = []
 Z = []
 Provinces = []
