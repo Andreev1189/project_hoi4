@@ -2,6 +2,9 @@ import pygame
 from pygame.draw import *
 from random import randint
 
+way_DIAMETR = 8 + 2
+supply_DIAMETR = 2 + 2
+
 l = [1, [2, 3], [4, [5, 6, [7, [8]]]], [9, 10]]
 def check_elem_in_list(l, el):
     if isinstance(l, int):
@@ -58,7 +61,7 @@ def massive_trans(massive):
         massive = new_massive
         new_massive = []
 
-def find_distance(Lines, self_current_prov, self_purpose):
+def find_distance(Lines, self_current_prov, self_purpose, DIAMETR=way_DIAMETR):
     deep = 1
     count = 0
     iteration_prov = self_neibours(Lines, self_current_prov)
@@ -67,12 +70,15 @@ def find_distance(Lines, self_current_prov, self_purpose):
         current_iteration_prov = []
         for prov in iteration_prov:
             current_iteration_prov.append(self_neibours(Lines, prov))
-        # print(current_iteration_prov)
         count = massive_trans(current_iteration_prov).count(self_purpose)
         GRAPH.append(current_iteration_prov)
         iteration_prov = massive_trans(current_iteration_prov)
         deep += 1
-    print([deep, count, GRAPH])
+        if len(GRAPH) == DIAMETR:
+            deep = -1
+            count = -1
+            GRAPH = -1
+            break
     return [deep, count, GRAPH]
 
 def get_unique_numbers(numbers):
@@ -87,11 +93,8 @@ def antifirst_prov(GRAPH_1, GRAPH_2, self_purpose):
     provinces = []
     for i in range(0, len(GRAPH_1)):
         for j in range(0, len(GRAPH_1[i])):
-            print(i, j, GRAPH_1[i][j], self_purpose)
             if GRAPH_1[i][j] == self_purpose:
-                print("GRAPH_2, i", GRAPH_2, i)
                 provinces.append(massive_trans(GRAPH_2)[i])
-    print("provinces", provinces)
     return get_unique_numbers(provinces)
 
 def way_distance(Provinces, massive):
@@ -104,6 +107,8 @@ def way_distance(Provinces, massive):
 def final_way(Provinces, Lines, self_current_prov, self_purpose):
     way_massive = []
     a = find_distance(Lines, self_current_prov, self_purpose)
+    if a == [-1, -1, -1]:
+        return [self_current_prov]
     deep = a[0]
     count = a[1]
     GRAPH = a[2]
@@ -123,7 +128,7 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     deep_GRAPH = get_unique_numbers(deep_GRAPH)
     # for i in range(0, len(deep_GRAPH)):
     #     deep_GRAPH[i] = get_unique_numbers(deep_GRAPH[i])
-    print(deep_GRAPH)
+    # print(deep_GRAPH)
     min_i = 5000
     min_j = 5000
     min_dist = 10000
@@ -131,7 +136,7 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     for p in range(len(deep_GRAPH)):
         first_way.append(deep_GRAPH[p][0][0])
         # deep_GRAPH[p][0].pop(0)
-    print(first_way)
+    print("first_way", first_way)
     for i in range(len(deep_GRAPH)):
         for j in range(len(deep_GRAPH[i])):
             pass
@@ -139,4 +144,32 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     return way_massive
 
 
+# MexaHuka cHa6)I(eHu9I:
 
+# ПОЛУЧАЕТ свои провинции, все центры снабжения, ВЫДАЁТ свои центры снабжения
+def true_logistics_prov(motherlands, logistics_prov):
+    true_log_prov = []
+    for prov in logistics_prov:
+        if prov in motherlands:
+            true_log_prov.append(prov)
+    return true_log_prov
+
+# ПОЛУЧАЕТ свои провинции, все Lines, ВЫДАЁТ только те lines, которые связывают свои провинции
+def true_Lines(Lines, motherlands):
+    true_lines = []
+    for way in Lines:
+        if (way.start_pos in motherlands) and (way.end_pos in motherlands):
+            way.color = 0xFFC91F
+            true_lines.append(way)
+    return true_lines
+
+# ПОЛУЧАЕТ свои провинции, все центры снабжения, ВЫДАЁТ снабжаемые провинции
+def supply_account(Lines, motherlands, logistics_prov):
+    supplylands = []
+    true_log_prov = true_logistics_prov(motherlands, logistics_prov)
+    true_lines = true_Lines(Lines, motherlands)
+    for log_prov in true_log_prov:
+        for prov in motherlands:
+            if find_distance(true_lines, log_prov, prov, DIAMETR=supply_DIAMETR) != [-1, -1, -1]:
+                supplylands.append(prov)
+    return supplylands
