@@ -104,7 +104,8 @@ class Division:
         self.battle_completed = battle_completed
         self.attack = attack
         self.armor = armor
-        self.organisation = organisation
+        self.base_organisation = organisation
+        self.organisation = self.base_organisation
         self.resource = 1
 
     def draw(self, Provinces):
