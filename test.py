@@ -35,61 +35,61 @@ volume = 0.5
 def draw_main_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
 
     main_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
-    menu = pygame.image.load('menu.png')
+    menu = pygame.image.load('pictures/menu.png')
     main_menu_surface.blit(menu, (0, 0))
     screen.blit(main_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
 
-    button1 = pygame.image.load('singleplayer.png')
+    button1 = pygame.image.load('pictures/singleplayer.png')
     screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
 
-    button2 = pygame.image.load('options.png')
+    button2 = pygame.image.load('pictures/options.png')
     screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 350))
 
-    button3 = pygame.image.load('quit.png')
+    button3 = pygame.image.load('pictures/quit.png')
     screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 550))
     print(12)
 
 def draw_option_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
 
     option_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
-    menu = pygame.image.load('menu.png')
+    menu = pygame.image.load('pictures/menu.png')
     option_menu_surface.blit(menu, (0, 0))
     screen.blit(option_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
 
-    button1 = pygame.image.load('Game.png')
+    button1 = pygame.image.load('pictures/Game.png')
     screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
 
-    button2 = pygame.image.load('Audio.png')
+    button2 = pygame.image.load('pictures/Audio.png')
     screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 380) )
 
-    button3 = pygame.image.load('Back.png')
+    button3 = pygame.image.load('pictures/Back.png')
     screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 530) )
     print(9)
 
 def draw_audio_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
 
     audio_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
-    menu = pygame.image.load('menu.png')
+    menu = pygame.image.load('pictures/menu.png')
     audio_menu_surface.blit(menu, (0, 0))
     screen.blit(audio_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
 
-    button1 = pygame.image.load('first.png')
+    button1 = pygame.image.load('pictures/first.png')
     screen.blit(button1, ((WIDTH - MENU_WIDTH)/2, 310))
 
-    button2 = pygame.image.load('second.png')
+    button2 = pygame.image.load('pictures/second.png')
     screen.blit(button2, ((WIDTH - MENU_WIDTH)/2, 390))
 
-    button3 = pygame.image.load('Back.png')
+    button3 = pygame.image.load('pictures/Back.png')
     screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 530) )
 
 def draw_game_menu(screen, HEIGHT, MENU_HEIGHT, WIDTH, MENU_WIDTH):
 
     game_menu_surface = pygame.Surface((MENU_WIDTH, MENU_HEIGHT))
-    menu = pygame.image.load('menu.png')
+    menu = pygame.image.load('pictures/menu.png')
     game_menu_surface.blit(menu, (0, 0))
     screen.blit(game_menu_surface, ((WIDTH - MENU_WIDTH)/2, (HEIGHT - MENU_HEIGHT)/ 2))
 
-    button3 = pygame.image.load('Back.png')
+    button3 = pygame.image.load('pictures/Back.png')
     screen.blit(button3, ((WIDTH - MENU_WIDTH)/2, 530) )
     '''
     сюда надо вставить пасту
