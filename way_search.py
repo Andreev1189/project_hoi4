@@ -2,7 +2,7 @@ import pygame
 from pygame.draw import *
 from random import randint
 
-way_DIAMETR = 8 + 2
+way_DIAMETR = 12 + 2
 supply_DIAMETR = 2 + 2
 
 l = [1, [2, 3], [4, [5, 6, [7, [8]]]], [9, 10]]
