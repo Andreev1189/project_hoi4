@@ -29,7 +29,7 @@ K = []
 Z = []
 Provinces = []
 all_motherlands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
-all_supplylands = [[0, 1, 2, 3, 4, 5], [8, 9, 10, 11, 12, 13]]
+all_supplylands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
 logistics_prov = [0, 13]
 Divisions = []
 Lines = []
@@ -88,7 +88,7 @@ timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, attack=115, armor=187, organisation=43, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, attack=10, defence=1000, organisation=1, velocity=1, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
         self.velocity = velocity
@@ -103,10 +103,8 @@ class Division:
         self.motherland = motherland
         self.battle_completed = battle_completed
         self.attack = attack
-        self.armor = armor
-        self.base_organisation = organisation
-        self.organisation = self.base_organisation
-        self.resource = 1
+        self.defence = defence
+        self.organisation = organisation
 
     def draw(self, Provinces):
         if self.motherland == 0:
@@ -254,9 +252,6 @@ class Division:
                 return True
             if line.start_pos == self.purpose and line.end_pos == self.current_prov:
                 return True
-
-
-
 
 
 

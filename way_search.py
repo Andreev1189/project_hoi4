@@ -99,37 +99,13 @@ def antifirst_prov(GRAPH_1, GRAPH_2, self_purpose):
 
 def way_distance(Provinces, massive):
     dist = 0
-    for i in range(0, len(massive)-1):
-        dist += ((Provinces[massive[i]].x - Provinces[massive[i+1]].x) ** 2 +
-         (Provinces[massive[i]].y - Provinces[massive[i+1]].y) ** 2) ** (1 / 2)
+    for n in range(0, len(massive)-2):
+        dist += ((Provinces[n].x - Provinces[n+1].x) ** 2 +
+         (Provinces[n].y - Provinces[n+1].y) ** 2) ** (1 / 2)
     return dist
 
-def min_dist_finder(Provinces, deep_GRAPH):
-    current_way = zero_way(deep_GRAPH)
-    deep_GRAPH = delete_zero_way(deep_GRAPH)
-    for i in range(len(massive_trans(deep_GRAPH[1]))-1):
-        if min(way_distance(Provinces, current_way), way_distance(Provinces, zero_way(deep_GRAPH))) == way_distance(Provinces, zero_way(deep_GRAPH)):
-            current_way = zero_way(deep_GRAPH)
-        deep_GRAPH = delete_zero_way(deep_GRAPH)
-    return current_way
-
-def zero_way(deep_GRAPH):
-    zero_way = []
-    for p in range(len(deep_GRAPH)):
-        zero_way.append(deep_GRAPH[p][0][0])
-    return zero_way
-
-def delete_zero_way(deep_GRAPH):
-    for i in range(1, len(deep_GRAPH)-1):
-        if len(deep_GRAPH[i][0]) > 1:
-            deep_GRAPH[i][0].pop(0)
-            break
-        elif len(deep_GRAPH[i][0]) == 1:
-            deep_GRAPH[i].pop(0)
-
-    return deep_GRAPH
-
 def final_way(Provinces, Lines, self_current_prov, self_purpose):
+    way_massive = []
     a = find_distance(Lines, self_current_prov, self_purpose)
     if a == [-1, -1, -1]:
         return [self_current_prov]
@@ -150,7 +126,22 @@ def final_way(Provinces, Lines, self_current_prov, self_purpose):
     deep_GRAPH.append(GRAPH[0])
     deep_GRAPH.reverse()
     deep_GRAPH = get_unique_numbers(deep_GRAPH)
-    way_massive = min_dist_finder(Provinces, deep_GRAPH)
+    # print("deep_GRAPH", deep_GRAPH)
+    # for i in range(0, len(deep_GRAPH)):
+    #     deep_GRAPH[i] = get_unique_numbers(deep_GRAPH[i])
+    # print(deep_GRAPH)
+    min_i = 5000
+    min_j = 5000
+    min_dist = 10000
+    first_way = []
+    for p in range(len(deep_GRAPH)):
+        first_way.append(deep_GRAPH[p][0][0])
+        # deep_GRAPH[p][0].pop(0)
+    # print("first_way", first_way)
+    for i in range(len(deep_GRAPH)):
+        for j in range(len(deep_GRAPH[i])):
+            pass
+    way_massive = first_way
     return way_massive
 
 
@@ -176,7 +167,6 @@ def true_Lines(Lines, motherlands):
 def supply_account(Lines, motherlands, logistics_prov):
     supplylands = []
     true_log_prov = true_logistics_prov(motherlands, logistics_prov)
-    supplylands.append(true_log_prov)
     true_lines = true_Lines(Lines, motherlands)
     for log_prov in true_log_prov:
         for prov in motherlands:
