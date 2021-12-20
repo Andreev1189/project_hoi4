@@ -23,9 +23,9 @@ BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 
-sound2 = pygame.mixer.Sound('Erich-Weinert-Ensemble_-_Arbeiter_von_Wien_(musmore.com).mp3')
-sound1 = pygame.mixer.Sound('Rammstein Links 2-3-4.mp3')
-sound3 = pygame.mixer.Sound('mechanic-button-pressing_fj_hbhno.mp3')
+sound2 = pygame.mixer.Sound('music/Erich-Weinert-Ensemble_-_Arbeiter_von_Wien_(musmore.com).mp3')
+sound1 = pygame.mixer.Sound('music/Rammstein Links 2-3-4.mp3')
+sound3 = pygame.mixer.Sound('music/mechanic-button-pressing_fj_hbhno.mp3')
 
 menu_type = 'main'
 
