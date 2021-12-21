@@ -15,7 +15,7 @@ YELLOW = 0xFFC91F
 GREEN = 0x00FF00
 MAGENTA = 0xFF03B8
 CYAN = 0x00FFCC
-BLACK = (0, 0, 0)
+BLACK = 0x000000
 WHITE = 0xFFFFFF
 GREY = 0x7D7D7D
 
@@ -33,7 +33,7 @@ all_supplylands = [[0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13]]
 logistics_prov = [0, 13]
 Divisions = []
 Lines = []
-
+battles = []
 
 
 def create_map(el, motherlands, number):
@@ -44,13 +44,14 @@ def craeate_lines(el):
     line = Way(int(el[0]), int(el[1]))
     Lines.append(line)
 
-def create_division(current_prov, color, motherland):
-    div = Division(current_prov, color, motherland)
+def create_division(current_prov, color, motherland, number, type):
+    div = Division(current_prov, color, motherland, number, type)
     Divisions.append(div)
 
-def printer(title, text_size=15, base_coords=(10, 10)):
+
+def printer(title, text_size=15, base_coords=(10, 10), color=WHITE):
     font = pygame.font.Font(None, text_size)
-    text = font.render(str(int(title)), True, [255, 255, 255])
+    text = font.render(str(int(title)), True, color)
     screen.blit(text, base_coords)
 
 
@@ -61,15 +62,29 @@ class Timeboss:
         self.time_is_running = -1
 
     def check(self, event):
+        '''
+        Проверяет запуск внутриигрового времени
+        :param event: нажатие на пробел
+        :return: изменяет параметр, отвечающий за ход внутриигрового времени
+        '''
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.time_is_running *= -1
 
     def runtime(self):
+        '''
+        Рассчитывает изменение внутриигрового времени
+        :return: изменяет параметр времени
+        '''
         if self.time_is_running == 1:
             self.TIME += self.TIMESPEED
 
     def speed_changer(self, event):
+        '''
+        Регулировка скорости изменения внутриигрового времени с помощью клавиш 1-5, 0
+        :param event: Нажатие клавиш 1-5, 0
+        :return: Изменяет параметр скорости
+        '''
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
                 self.TIMESPEED = 1
@@ -84,14 +99,14 @@ class Timeboss:
             if event.key == pygame.K_0:
                 self.TIMESPEED = 10
 
+# Создание регулятора времени (только он используетя во время игры)
 timeboss = Timeboss()
 
 
 class Division:
-    def __init__(self, current_prov, color,  motherland, purpose=-1, way_completed=-1, battle_completed=2, attack=10, defence=1000, organisation=1, velocity=1, r=10, alive=1):
+    def __init__(self, current_prov, color,  motherland, number, type, purpose=-1, way_completed=-1, battle_completed=2, r=10, alive=1):
         self.current_prov = current_prov
         self.color = color
-        self.velocity = velocity
         self.is_chosen = False
         self.purpose = purpose
         self.current_way = [-1]
@@ -101,12 +116,26 @@ class Division:
         self.r = r
         self.alive = alive
         self.motherland = motherland
+        self.number = number
+        self.type = type
+        self.velocity = self.battle_stats()[4]
         self.battle_completed = battle_completed
-        self.attack = attack
-        self.defence = defence
-        self.organisation = organisation
+        self.attack_battle_exist = False
+        self.defence_battle_exist = False
+        self.attack = self.battle_stats()[0]
+        self.defence = self.battle_stats()[2]
+        self.base_organisation = self.battle_stats()[1]
+        self.organisation = self.base_organisation
+        self.supp_factor = self.battle_stats()[3]
 
     def draw(self, Provinces):
+        '''
+        Отрисовывает всё, что связано с дивизией -
+        её принадлежность, выбранность, текущий путь, организацию, наличие снабжения
+        :param Provinces:
+        :return:
+        '''
+        # Блок, отвечающий за принадлежность и выбранность (отображает цвет прямоугольника)
         if self.motherland == 0:
             if not self.is_chosen:
                 self.color = default_color
@@ -117,19 +146,30 @@ class Division:
                 self.color = RED
             if self.is_chosen:
                 self.color = YELLOW
+        # Блок, рисующий прямоугольник
         pygame.draw.rect(screen, self.color,
             (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r,
                 2 * self.r, self.r))
+        # Блок, рисующий организацию
+        local_title = self.organisation / self.base_organisation * 100
+        local_coords = (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r)
+        printer(local_title, text_size=15, base_coords=local_coords, color=BLACK)
+        # Блок, рисующий текущий путь
         if self.current_way != [-1] and self.is_chosen == True:
             self.draw_current_way()
         if self.way_completed != -1 and self.is_chosen == True:
             self.draw_current_line()
         self.supply_define()
+        # Блок, рисующий наличие снабжения
         if not self.is_supply:
             circle(screen, BLACK,
                    (Provinces[self.current_prov].x - self.r, Provinces[self.current_prov].y - 0.5 * self.r), 3)
 
     def draw_current_line(self):
+        '''
+        Функция, рисующая пройденный путь между провинциями
+        :return: рисует отрезок
+        '''
         R_0 = [Provinces[self.current_prov].x, Provinces[self.current_prov].y]
         R_1 = [Provinces[self.current_way[0]].x, Provinces[self.current_way[0]].y]
         R_line = [R_1[0] - R_0[0], R_1[1] - R_0[1]]
@@ -139,6 +179,10 @@ class Division:
         pygame.draw.line(screen, MAGENTA, R_0, R_current_dot, 3)
 
     def draw_current_way(self):
+        '''
+        Функция, рисующая предстоящий путь
+        :return: рисует ломаную
+        '''
         current_way_coords = []
         for el in massive_trans(self.current_way):
             current_way_coords.append([Provinces[el].x, Provinces[el].y])
@@ -149,11 +193,17 @@ class Division:
         polygon(screen, CYAN, total_way_coords, 3)
 
     def move(self):
+        '''
+        Определяет положение дивизии во времени
+        :return: изменяет параметр текущего пути
+        '''
         if self.current_way != [-1]:
+            # Случай направления на провинцию, в которой дивизия и так стоит
             if self.current_way[0] == self.current_prov:
                 self.prov_capture(self.current_way[0])
                 self.current_way.pop(0)
                 self.way_completed = -1
+            # Случай направления на провинцию, соседнюю с данной
             elif len(self.current_way) == 1:
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
                 s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x)**2
@@ -166,6 +216,7 @@ class Division:
                     self.current_way = [-1]
                     self.way_completed = -1
                     self.is_chosen = False
+            # Случай движения по пути-ломаной
             elif len(self.current_way) >= 1:
                 s_now = (timeboss.TIME - self.start_moment) * self.velocity
                 s_full = ((Provinces[self.current_prov].x - Provinces[self.current_way[0]].x) ** 2
@@ -175,18 +226,69 @@ class Division:
                     self.prov_capture(self.current_way[0])
                     self.current_prov = self.current_way[0]
                     self.current_way.pop(0)
+                    self.attack_battle_check()
+                    self.cancel_battle_check()
                     self.start_moment = timeboss.TIME
                     self.way_completed = -1
+            # Отмена выбранности дошедшей дивизии
             if len(self.current_way) == 0:
                 self.purpose = -1
                 self.current_way = [-1]
                 self.way_completed = -1
                 self.is_chosen = False
 
-    def battle(self):
-        pass
+    def attack_battle_check(self):
+        '''
+        Проверка вступления дивизии в бой из-за атаки
+        :return: вводит данные о дивизии в класс боя, отмечает дивизию как воюющую
+        '''
+        # Применяется при переходе в новую провинцию
+        for div in Divisions:
+            # Случай атаки
+            if self.current_way[0] in all_motherlands[-self.motherland-1] and div.motherland != self.motherland and div.current_prov == self.current_way[0]:
+                print("battle exist")
+                # Проверка на старый бой
+                is_battle_exist = False
+                for battle in battles:
+                    if battle.prov == div.current_prov:
+                        battle.attackers.append(self.number)
+                        is_battle_exist = True
+                        self.attack_battle_exist = True
+                # Создание нового боя
+                if not is_battle_exist:
+                    battles.append(Battle(div.current_prov, attackers=[self.number], defenders=[div.number]))
+                    self.attack_battle_exist = True
+                    div.defence_battle_exist = True
+
+    def cancel_battle_check(self):
+        '''
+        Проверка выхода дивизий из боя при перенаправлении
+        :return: Выводит дивизии из классов боя, изменяет внутренние параметры, говорящие о наличии боя
+        '''
+        if self.attack_battle_exist:
+            for battle in battles:
+                if self.number in battle.attackers:
+                    if len(battle.attackers) == 1:
+                        for div in Divisions:
+                            if div.number in battle.defenders:
+                                div.defence_battle_exist = False
+                        battles.pop(battles.index(battle))
+                    else:
+                        battle.attackers.remove(self.number)
+            for div in Divisions:
+                if div.motherland != self.motherland and div.current_prov == self.current_way[0]:
+                    self.attack_battle_check()
+                    return False
+            self.attack_battle_exist = False
 
     def prov_capture(self, current_prov):
+        '''
+        Функция запускается при захвате провинции.
+        Функция пересчитывает глобальную переменную, говорящую о снабжаемости провинций.
+        Это в тот же момент фиксируется и в других дивизиях
+        :param current_prov: Меняющая сторону провинция
+        :return: Изменяет all_supplylands
+        '''
         if Provinces[current_prov].motherland != self.motherland:
             global all_supplylands
             all_motherlands[Provinces[current_prov].motherland].remove(current_prov)
@@ -198,6 +300,10 @@ class Division:
             self.supply_define()
 
     def supply_define(self):
+        '''
+        Исходя из пересчёта all_supplylands выясняет снабжаемость
+        :return: меняется коэффициент, говорящий о снабжаемости
+        '''
         for div in Divisions:
             if div.motherland == 0:
                 if div.current_prov in all_supplylands[0]:
@@ -211,6 +317,11 @@ class Division:
                     div.is_supply = False
 
     def chosen(self, event):
+        '''
+        Позволяет выбрать дивизию с помощью клика левой кнопкой мыши
+        :param event: клик левой кнопкой мыши по нужной провинции
+        :return: изменяет параметр, отвечающий за выбранность
+        '''
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 x_pos, y_pos = event.pos
@@ -221,6 +332,13 @@ class Division:
                     self.is_chosen = False
 
     def direction(self, event, Provinces):
+        '''
+        Назначает провинцию, в которую должна придти дивизия.
+        Использует алгоритм поиска по графу с ограничением на глубину в 8
+        :param event: клик правой кнопкой мыши по нужной провинции
+        :param Provinces: все провинции
+        :return: Изменяет переменную текущего пути с отсутствия пути на массив предстоящих провинций
+        '''
         if self.is_chosen == True:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
@@ -231,27 +349,176 @@ class Division:
                             self.current_way = self.way_massive()
                             self.way_completed = 0
                             self.start_moment = timeboss.TIME
+                            self.attack_battle_check()
+                            self.cancel_battle_check()
 
     def way_massive(self):
+        '''
+        Непосредственное использование функции из файла поиска пути
+        :return: список предстоящих провинций
+        '''
         massive = []
-        # TpuBuaJIbHblu cJIy4au:
+        # Случай выбора текущей провинции:
         if self.purpose == self.current_prov:
             massive.append(self.current_prov)
-        # CJIy4au cocegeu:
+        # Случай выбора соседней провинции:
         elif self.self_neighbours():
             massive.append(self.purpose)
-        # CJIy4au He cocegeu:
+        # Случай, когда необходимо проводить поиск по графу:
         else:
             massive = final_way(Provinces, Lines, self.current_prov, self.purpose)
         return massive
 
     def self_neighbours(self):
+        '''
+        Проверяет, выбрана ли соседняя точка, как цель
+        :return: True, если выбранная точка - соседняя
+        '''
         for line in Lines:
             if line.start_pos == self.current_prov and line.end_pos == self.purpose:
                 return True
             if line.start_pos == self.purpose and line.end_pos == self.current_prov:
                 return True
 
+    def battle_stats(self):
+        '''
+        Считает боевые характеристики, исходя из типа дивизии
+        :return: список боевых характеристик
+        '''
+        org_fix = 2000
+        att, base_org, defence, supp_fact, vel = 100, 30, 200, 0.2, 3
+        if self.type == 'inf':
+            att = 115.1
+            base_org = 43.1 * org_fix
+            defence = 187.4
+            supp_fact = 0.024 * org_fix
+            vel = 1
+        if self.type == 'moto':
+            att = 115.1
+            base_org = 43.1 * org_fix
+            defence = 187.4
+            supp_fact = 0.024 * org_fix
+            vel = 3
+        if self.type == 'tank':
+            att = 545.5
+            base_org = 80.8 * org_fix
+            defence = 237.2
+            supp_fact = 0.028 * org_fix
+            vel = 3
+        return [att, base_org, defence, supp_fact, vel]
+
+    def calculate_peace_org(self):
+        '''
+        Отвечает за оснащение дивизии вне боя
+        :return: Оснащает дивизию в зоне снабжения, истощает дивизию без снабжения
+        '''
+        if (not self.defence_battle_exist) and (not self.attack_battle_exist):
+            if self.organisation/self.base_organisation < 1:
+                if self.is_supply:
+                    self.organisation += self.supp_factor
+                if not self.is_supply:
+                    self.organisation -= self.supp_factor / 10
+
+
+class Battle:
+    def __init__(self, prov, attackers, defenders):
+        self.prov = prov
+        self.attackers = attackers
+        self.defenders = defenders
+        self.attack_tanks = self.div_counter()[0]
+        self.attack_moto = self.div_counter()[1]
+        self.attack_inf = self.div_counter()[2]
+        self.defence_tanks = self.div_counter()[3]
+        self.defence_moto = self.div_counter()[4]
+        self.defence_inf = self.div_counter()[5]
+
+    def calculate_org(self, div_number):
+        '''
+        Считает показатели в бою для конкретной дивизии-класса
+        :param div_number: номер дивизии (обычно self.number)
+        :return: ничего не возвращает, изменяет self.параметры внутри класса-дивизии
+        '''
+        for div in Divisions:
+            if div.number == div_number:
+                if div_number in self.defenders:
+                    div.organisation += - max(0., self.total_attack() * len(self.attack_prov()) ** 1.5 + self.total_defence()) - self.supply_factor(div)
+                if div_number in self.attackers:
+                    div.organisation += - max(0., self.total_attack() / len(self.attack_prov()) ** 1.5 + self.total_defence()) - self.supply_factor(div)
+                if div.organisation < 0:
+                    for battle in battles:
+                        if div.number in battle.defenders:
+                            if len(battle.defenders) == 1:
+                                battles.pop(battles.index(battle))
+                    Divisions.pop(Divisions.index(div))
+
+    def div_counter(self):
+        '''
+        Переносит боевые данные дивизий для расчёта боя
+        :return: список боевых показателей дивизий
+        '''
+        attack_tanks = []
+        attack_moto = []
+        attack_inf = []
+        defence_tanks = []
+        defence_moto = []
+        defence_inf = []
+        for div in Divisions:
+            if div.type == 'tank' and (div.number in self.attackers):
+                attack_tanks.append(div.number)
+            if div.type == 'moto' and (div.number in self.attackers):
+                attack_moto.append(div.number)
+            if div.type == 'inf' and (div.number in self.attackers):
+                attack_inf.append(div.number)
+            if div.type == 'tank' and (div.number in self.defenders):
+                defence_tanks.append(div.number)
+            if div.type == 'moto' and (div.number in self.defenders):
+                defence_moto.append(div.number)
+            if div.type == 'inf' and (div.number in self.defenders):
+                defence_inf.append(div.number)
+        return [attack_tanks, attack_moto, attack_inf, defence_tanks, defence_moto, defence_inf]
+
+    def total_attack(self):
+        '''
+        По известной формуле считает коэффициент атаки атакующей стороны в бою
+        :return: коэффициент атаки
+        '''
+        tank_att, moto_att, inf_att = 145.5, 115.1, 115.1
+        attack = (len(self.attack_tanks)*tank_att + len(self.attack_moto)*moto_att + len(self.attack_inf)*inf_att) / \
+                 (len(self.attack_tanks) + len(self.attack_moto) + len(self.attack_inf))
+        return attack
+
+    def total_defence(self):
+        '''
+        По известной формуле считает коэффициент защиты обороняющейся стороны в бою
+        :return: коэффициент защиты
+        '''
+        tank_defence, moto_defence, inf_defence = 137.2, 187.4, 187.4
+        defence = (len(self.defence_tanks)*tank_defence + len(self.defence_moto)*moto_defence + len(self.defence_inf)*inf_defence) / \
+                 (len(self.defence_tanks) + len(self.defence_moto) + len(self.defence_inf))
+        return defence
+
+    def attack_prov(self):
+        '''
+        Считает провинции, из которыз производится атака
+        :return: список провинций с атакующими дивизиями
+        '''
+        side_prov = []
+        for num in self.attackers:
+            for div in Divisions:
+                if div.number == num and ((div.current_prov in side_prov) == False):
+                    side_prov.append(div.current_prov)
+        return side_prov
+
+    def supply_factor(self, div):
+        '''
+        Считает скорость восполнения огранизации во время боя для формулы
+        :param div: рассматриваемая дивизия
+        :return: коэффициент скорости снабжения
+        '''
+        if not div.is_supply:
+            return 0
+        if div.is_supply:
+            return div.supp_factor
 
 
 class Province:
@@ -264,6 +531,10 @@ class Province:
         self.r = r
 
     def draw(self):
+        '''
+        Рисует провинции, их принадлежность
+        :return: цветные кружочки на экране
+        '''
         if self.motherland == 0:
             self.color = WHITE
         else:
@@ -271,7 +542,6 @@ class Province:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.r)
         if self.number in logistics_prov:
             pygame.draw.circle(screen, YELLOW, (self.x, self.y), self.r, 2)
-
 
 
 class Way:
@@ -283,6 +553,11 @@ class Way:
                          (Provinces[start_pos].y - Provinces[end_pos].y)**2)**(1/2)
 
     def draw(self, Provinces):
+        '''
+        Рисует наличие пути между провинциями
+        :param Provinces: Необходим список всех провинций
+        :return: линии между провинциями
+        '''
         pygame.draw.line(screen, GREY, (Provinces[self.start_pos].x, Provinces[self.start_pos].y),
                                         (Provinces[self.end_pos].x, Provinces[self.end_pos].y), 10)
 
@@ -312,10 +587,10 @@ for i, el in enumerate(Z):
     el = el.split()
     craeate_lines(el)
 
-default_color = GREEN
-create_division(0, default_color, 0)
-create_division(12, RED, 1)
 
+default_color = GREEN
+create_division(0, default_color, 0, number=1, type='inf')
+create_division(12, RED, 1, number=-1, type='tank')
 
 
 pygame.display.update()
@@ -333,11 +608,18 @@ while not finished:
 
     for div in Divisions:
         div.move()
-        div.battle()
         for event in EVENTS:
             div.chosen(event)
             div.direction(event, Provinces)
         div.draw(Provinces)
+        if timeboss.time_is_running == 1:
+            for i in range(timeboss.TIMESPEED):
+                div.calculate_peace_org()
+        for battle in battles:
+            if div.number in massive_trans(battle.attackers) or div.number in massive_trans(battle.defenders):
+                if timeboss.time_is_running == 1:
+                    for i in range(timeboss.TIMESPEED):
+                        battle.calculate_org(div.number)
 
     for event in EVENTS:
         timeboss.check(event)
