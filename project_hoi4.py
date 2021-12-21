@@ -38,6 +38,10 @@ Divisions = []
 Lines = []
 battles = []
 
+bg = pygame.image.load('Hoi4_map_pict.JPG') # загружаем задний фон 
+screen.blit(bg, (0,0))
+
+
 
 def create_map(el, motherlands, number):
     prov = Province(int(el[0]), int(el[1]), motherlands, number)
@@ -635,6 +639,9 @@ while not finished:
     printer(timeboss.TIME)
 
     pygame.display.update()
-    screen.fill((0, 0, 40))
+    screen.fill((0, 0, 40))    
+    bg = pygame.image.load('Hoi4_map_pict.JPG') # загружаем задний фон 
+    screen.blit(bg, (0,0))
+
 
 pygame.quit()
