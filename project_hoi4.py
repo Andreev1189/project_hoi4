@@ -1,9 +1,9 @@
 print("hello VoVa!!!")
-from math import *
 import pygame
 from pygame.draw import *
 from random import randint
 from way_search import *
+from menu import *
 
 
 pygame.init()
