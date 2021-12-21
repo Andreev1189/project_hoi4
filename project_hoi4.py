@@ -5,6 +5,7 @@ from pygame.draw import *
 from random import randint
 from way_search import *
 
+
 pygame.init()
 
 FPS = 30
@@ -323,6 +324,7 @@ create_division(12, RED, 1)
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+
 
 while not finished:
     clock.tick(FPS)

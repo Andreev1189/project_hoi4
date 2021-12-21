@@ -250,6 +250,7 @@ def GENERAL(event, sound1, sound2, sound3, current_sound, screen, HEIGHT,
         elif menu_type == 'main':
 
             Finished = quit_main(event)
+        
 
             if main_to_option(event):
                 menu_type = 'option'
